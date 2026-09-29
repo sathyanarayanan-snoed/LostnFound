@@ -1,0 +1,13 @@
+services:
+  backend:
+    build: ./backend
+    container_name: lostnfound_backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/uploads:/app/uploads
+    environment:
+      - PORT=8080
+      - JWT_SECRET=lostnfound_secret_key_2026
