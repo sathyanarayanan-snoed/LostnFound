@@ -30,8 +30,14 @@ db.serialize(() => {
     created_at INTEGER,
     post_count INTEGER DEFAULT 0,
     last_post_time INTEGER DEFAULT 0,
-    fcm_token TEXT
+    fcm_token TEXT,
+    profile_pic_url TEXT DEFAULT '',
+    role TEXT DEFAULT 'member'
   )`);
+
+  db.run(`ALTER TABLE users ADD COLUMN profile_pic_url TEXT DEFAULT ''`, () => {});
+  db.run(`ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'member'`, () => {});
+  db.run(`UPDATE users SET role = 'admin' WHERE email = 'alex.cs2024@citchennai.net'`, () => {});
 
   db.run(`CREATE TABLE IF NOT EXISTS found_items (
     id TEXT PRIMARY KEY,
@@ -136,8 +142,8 @@ app.post('/api/auth/signup', (req, res) => {
       }
       return res.status(500).json({ error: err.message });
     }
-    const token = jwt.sign({ uid, email }, JWT_SECRET, { expiresIn: '30d' });
-    res.json({ token, user: { uid, email, displayName: displayName || email.split('@')[0] } });
+    const token = jwt.sign({ uid, email, role: 'member' }, JWT_SECRET, { expiresIn: '30d' });
+    res.json({ token, user: { uid, email, displayName: displayName || email.split('@')[0], role: 'member', profilePicUrl: '' } });
   });
 });
 
@@ -152,13 +158,15 @@ app.post('/api/auth/login', (req, res) => {
     if (!user || !bcrypt.compareSync(password, user.password_hash)) {
       return res.status(401).json({ error: 'Invalid credentials. Please verify your email and password.' });
     }
-    const token = jwt.sign({ uid: user.uid, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+    const token = jwt.sign({ uid: user.uid, email: user.email, role: user.role || 'member' }, JWT_SECRET, { expiresIn: '30d' });
     res.json({
       token,
       user: {
         uid: user.uid,
         email: user.email,
-        displayName: user.display_name
+        displayName: user.display_name,
+        role: user.role || 'member',
+        profilePicUrl: user.profile_pic_url || ''
       }
     });
   });
@@ -452,6 +460,96 @@ app.get('/api/users/:uid/items', (req, res) => {
         }))
       });
     });
+  });
+});
+
+function requireAdmin(req, res, next) {
+  db.get('SELECT role FROM users WHERE uid = ?', [req.user.uid], (err, user) => {
+    if (err || !user || user.role !== 'admin') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+    next();
+  });
+}
+
+app.put('/api/users/profile-pic', authenticateToken, (req, res) => {
+  const { profilePicUrl } = req.body;
+  if (!profilePicUrl) return res.status(400).json({ error: 'profilePicUrl is required' });
+  db.run('UPDATE users SET profile_pic_url = ? WHERE uid = ?', [profilePicUrl, req.user.uid], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true, profilePicUrl });
+  });
+});
+
+app.get('/api/users/search', (req, res) => {
+  const q = req.query.q || '';
+  if (!q.trim()) return res.json([]);
+  const queryParam = `%${q.trim()}%`;
+  db.all(
+    'SELECT uid, email, display_name, profile_pic_url, role, post_count, created_at FROM users WHERE display_name LIKE ? OR email LIKE ? LIMIT 30',
+    [queryParam, queryParam],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json(rows.map(r => ({
+        uid: r.uid,
+        email: r.email,
+        displayName: r.display_name,
+        profilePicUrl: r.profile_pic_url || '',
+        role: r.role || 'member',
+        postCount: r.post_count || 0,
+        createdAt: r.created_at
+      })));
+    }
+  );
+});
+
+app.get('/api/users/:uid', (req, res) => {
+  db.get('SELECT uid, email, display_name, profile_pic_url, role, post_count, created_at FROM users WHERE uid = ?', [req.params.uid], (err, user) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({
+      uid: user.uid,
+      email: user.email,
+      displayName: user.display_name,
+      profilePicUrl: user.profile_pic_url || '',
+      role: user.role || 'member',
+      postCount: user.post_count || 0,
+      createdAt: user.created_at
+    });
+  });
+});
+
+app.get('/api/admin/users', authenticateToken, requireAdmin, (req, res) => {
+  db.all('SELECT uid, email, display_name, profile_pic_url, role, post_count, created_at FROM users ORDER BY created_at DESC', (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows.map(r => ({
+      uid: r.uid,
+      email: r.email,
+      displayName: r.display_name,
+      profilePicUrl: r.profile_pic_url || '',
+      role: r.role || 'member',
+      postCount: r.post_count || 0,
+      createdAt: r.created_at
+    })));
+  });
+});
+
+app.put('/api/admin/users/:uid/role', authenticateToken, requireAdmin, (req, res) => {
+  const { role } = req.body;
+  if (!role || !['member', 'moderator', 'admin'].includes(role)) {
+    return res.status(400).json({ error: 'Valid role is required (member, moderator, admin)' });
+  }
+  db.run('UPDATE users SET role = ? WHERE uid = ?', [role, req.params.uid], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true, role });
+  });
+});
+
+app.delete('/api/admin/items/:type/:id', authenticateToken, requireAdmin, (req, res) => {
+  const table = req.params.type === 'lost' ? 'lost_items' : 'found_items';
+  db.run(`DELETE FROM ${table} WHERE id = ?`, [req.params.id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
   });
 });
 

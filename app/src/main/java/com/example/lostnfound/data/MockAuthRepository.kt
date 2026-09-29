@@ -1,5 +1,6 @@
 package com.example.lostnfound.data
 
+import android.net.Uri
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,8 +10,11 @@ class MockAuthRepository : AuthRepository {
     override val authStateFlow: StateFlow<String?> = _authStateFlow
     
     private var _email: String? = null
+    private var _profilePic: String? = null
     override val currentUserEmail: String? get() = _email
     override val currentUserId: String? get() = _authStateFlow.value
+    override val currentUserRole: String? get() = "admin"
+    override val currentUserProfilePic: String? get() = _profilePic
 
     override suspend fun signIn(email: String, password: String): Result<Unit> {
         delay(1000)
@@ -41,6 +45,11 @@ class MockAuthRepository : AuthRepository {
         } else {
             Result.failure(Exception("Invalid email address"))
         }
+    }
+
+    override suspend fun updateProfilePic(uri: Uri): Result<String> {
+        _profilePic = uri.toString()
+        return Result.success(uri.toString())
     }
 
     override fun signOut() {

@@ -19,6 +19,8 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(ItemDetailViewModel::class.java) -> ItemDetailViewModel(itemRepository, authRepository) as T
             modelClass.isAssignableFrom(ReportFoundViewModel::class.java) -> ReportFoundViewModel(itemRepository, authRepository, storageService) as T
             modelClass.isAssignableFrom(ReportLostViewModel::class.java) -> ReportLostViewModel(itemRepository, authRepository, storageService) as T
+            modelClass.isAssignableFrom(UserSearchViewModel::class.java) -> UserSearchViewModel(itemRepository) as T
+            modelClass.isAssignableFrom(AdminViewModel::class.java) -> AdminViewModel(itemRepository) as T
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }
     }

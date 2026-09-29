@@ -1,5 +1,6 @@
 package com.example.lostnfound.ui.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lostnfound.data.AuthRepository
@@ -16,6 +17,8 @@ data class AuthUiState(
     val userId: String? = null,
     val userEmail: String? = null,
     val displayName: String? = null,
+    val role: String = "member",
+    val profilePicUrl: String = "",
     val isAuthenticated: Boolean = false
 )
 
@@ -30,6 +33,8 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                     userId = userId,
                     userEmail = if (userId != null) authRepository.currentUserEmail else null,
                     displayName = if (userId != null) authRepository.currentUserEmail?.substringBefore("@") else null,
+                    role = if (userId != null) authRepository.currentUserRole ?: "member" else "member",
+                    profilePicUrl = if (userId != null) authRepository.currentUserProfilePic ?: "" else "",
                     isAuthenticated = userId != null
                 )
             }
@@ -50,6 +55,8 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
             val result = authRepository.signIn(email, password)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
+                role = authRepository.currentUserRole ?: "member",
+                profilePicUrl = authRepository.currentUserProfilePic ?: "",
                 error = result.exceptionOrNull()?.let { mapAuthError(it) }
             )
         }
@@ -67,8 +74,28 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
             val result = authRepository.signUp(email, password, displayName)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
+                role = authRepository.currentUserRole ?: "member",
+                profilePicUrl = authRepository.currentUserProfilePic ?: "",
                 error = result.exceptionOrNull()?.let { mapAuthError(it) }
             )
+        }
+    }
+
+    fun uploadProfilePic(uri: Uri) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            val result = authRepository.updateProfilePic(uri)
+            if (result.isSuccess) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    profilePicUrl = result.getOrThrow()
+                )
+            } else {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = result.exceptionOrNull()?.message ?: "Failed to upload profile picture"
+                )
+            }
         }
     }
 

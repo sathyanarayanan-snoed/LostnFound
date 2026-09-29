@@ -18,7 +18,8 @@ data class ItemDetailUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val isOwner: Boolean = false,
-    val claimSuccess: Boolean = false
+    val claimSuccess: Boolean = false,
+    val showContactDialog: Boolean = false
 )
 
 class ItemDetailViewModel(
@@ -65,5 +66,9 @@ class ItemDetailViewModel(
                 error = result.exceptionOrNull()?.message
             )
         }
+    }
+
+    fun toggleContactDialog() {
+        _uiState.value = _uiState.value.copy(showContactDialog = !_uiState.value.showContactDialog)
     }
 }

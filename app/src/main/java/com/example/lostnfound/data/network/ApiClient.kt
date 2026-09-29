@@ -33,7 +33,19 @@ data class AuthResponse(
 data class UserInfo(
     val uid: String,
     val email: String,
-    val displayName: String
+    val displayName: String,
+    val role: String = "member",
+    val profilePicUrl: String = ""
+)
+
+@Serializable
+data class UpdateProfilePicRequest(
+    val profilePicUrl: String
+)
+
+@Serializable
+data class UpdateRoleRequest(
+    val role: String
 )
 
 @Serializable

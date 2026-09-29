@@ -17,9 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,6 +26,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material3.CircularProgressIndicator
@@ -66,7 +66,8 @@ fun FeedScreen(
     onItemClick: (String, Boolean) -> Unit,
     onReportFound: () -> Unit,
     onReportLost: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onSearchUsersClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showFilterSheet by remember { mutableStateOf(false) }
@@ -156,7 +157,7 @@ fun FeedScreen(
                     ) {
                         Column {
                             Text(
-                                text = "Lost & Found",
+                                text = "Lost & Found Board",
                                 style = MaterialTheme.typography.headlineLarge.copy(
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = (-0.5).sp
@@ -164,30 +165,54 @@ fun FeedScreen(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Institutional Campus Portal",
+                                text = "CIT Campus Community",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Medium
                             )
                         }
 
-                        IconButton(
-                            onClick = onProfileClick,
-                            modifier = Modifier
-                                .size(44.dp)
-                                .shadow(6.dp, CircleShape)
-                                .border(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
-                                    CircleShape
-                                )
-                                .background(MaterialTheme.colorScheme.surface, CircleShape)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                Icons.Outlined.Person,
-                                contentDescription = "Profile",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                            IconButton(
+                                onClick = onSearchUsersClick,
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .shadow(6.dp, CircleShape)
+                                    .border(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                                        CircleShape
+                                    )
+                                    .background(MaterialTheme.colorScheme.surface, CircleShape)
+                            ) {
+                                Icon(
+                                    Icons.Outlined.PersonSearch,
+                                    contentDescription = "Search Users",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+
+                            IconButton(
+                                onClick = onProfileClick,
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .shadow(6.dp, CircleShape)
+                                    .border(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                                        CircleShape
+                                    )
+                                    .background(MaterialTheme.colorScheme.surface, CircleShape)
+                            ) {
+                                Icon(
+                                    Icons.Outlined.Person,
+                                    contentDescription = "Profile",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
 
@@ -308,12 +333,21 @@ fun FeedScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            if (uiState.searchFilters.query.isNotBlank() && !uiState.isLoading) {
+                Text(
+                    text = "${uiState.items.size} results found",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
+                )
+            }
+
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
                 if (uiState.isLoading && uiState.items.isEmpty()) {
-                    LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Fixed(2),
+                    LazyColumn(
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
@@ -358,8 +392,7 @@ fun FeedScreen(
                         )
                     }
                 } else {
-                    LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Fixed(2),
+                    LazyColumn(
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {

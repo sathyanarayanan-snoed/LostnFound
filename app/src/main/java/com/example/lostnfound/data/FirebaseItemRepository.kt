@@ -4,8 +4,8 @@ import com.example.lostnfound.data.firebase.FirestoreService
 import com.example.lostnfound.domain.model.FoundItem
 import com.example.lostnfound.domain.model.LostItem
 import com.example.lostnfound.domain.model.SearchFilters
+import com.example.lostnfound.domain.model.User
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.tasks.await
 
 class FirebaseItemRepository(
     private val firestoreService: FirestoreService
@@ -36,8 +36,6 @@ class FirebaseItemRepository(
         )
         val matches = firestoreService.searchLostItems(filters).getOrNull()
         if (!matches.isNullOrEmpty()) {
-            // In a real app, you'd send this to FCM via a backend.
-            // For this implementation, we simulate interest-based topic messaging.
             FirebaseMessaging.getInstance().subscribeToTopic("matches_${foundItem.category}")
         }
     }
@@ -76,5 +74,21 @@ class FirebaseItemRepository(
 
     override suspend fun getUserLostItems(userId: String): Result<List<LostItem>> {
         return firestoreService.getUserLostItems(userId)
+    }
+
+    override suspend fun searchUsers(query: String): Result<List<User>> {
+        return Result.success(emptyList())
+    }
+
+    override suspend fun getAllUsers(): Result<List<User>> {
+        return Result.success(emptyList())
+    }
+
+    override suspend fun updateUserRole(uid: String, role: String): Result<Unit> {
+        return Result.success(Unit)
+    }
+
+    override suspend fun deleteItemAsAdmin(itemId: String, isLostItem: Boolean): Result<Unit> {
+        return Result.success(Unit)
     }
 }

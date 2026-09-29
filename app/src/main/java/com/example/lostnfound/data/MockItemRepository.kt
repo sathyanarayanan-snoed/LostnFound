@@ -4,6 +4,7 @@ import com.example.lostnfound.domain.model.FoundItem
 import com.example.lostnfound.domain.model.ItemCategory
 import com.example.lostnfound.domain.model.LostItem
 import com.example.lostnfound.domain.model.SearchFilters
+import com.example.lostnfound.domain.model.User
 import kotlinx.coroutines.delay
 
 class MockItemRepository : ItemRepository {
@@ -18,7 +19,7 @@ class MockItemRepository : ItemRepository {
             imageUrl = "https://images.unsplash.com/photo-1602143301015-7121f0045f22?auto=format&fit=crop&q=80&w=800",
             latitude = 12.9918,
             longitude = 80.2335,
-            reportedAt = System.currentTimeMillis() - 1800000 // 30m ago
+            reportedAt = System.currentTimeMillis() - 1800000
         ),
         FoundItem(
             id = "f2",
@@ -30,7 +31,7 @@ class MockItemRepository : ItemRepository {
             imageUrl = "https://images.unsplash.com/photo-1611186871348-b1ec696e523b?auto=format&fit=crop&q=80&w=800",
             latitude = 12.9902,
             longitude = 80.2341,
-            reportedAt = System.currentTimeMillis() - 7200000 // 2h ago
+            reportedAt = System.currentTimeMillis() - 7200000
         ),
         FoundItem(
             id = "f3",
@@ -42,7 +43,7 @@ class MockItemRepository : ItemRepository {
             imageUrl = "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&q=80&w=800",
             latitude = 12.9912,
             longitude = 80.2325,
-            reportedAt = System.currentTimeMillis() - 14400000 // 4h ago
+            reportedAt = System.currentTimeMillis() - 14400000
         ),
         FoundItem(
             id = "f4",
@@ -54,7 +55,7 @@ class MockItemRepository : ItemRepository {
             imageUrl = "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&q=80&w=800",
             latitude = 12.9898,
             longitude = 80.2352,
-            reportedAt = System.currentTimeMillis() - 86400000 // 1d ago
+            reportedAt = System.currentTimeMillis() - 86400000
         ),
         FoundItem(
             id = "f5",
@@ -66,7 +67,7 @@ class MockItemRepository : ItemRepository {
             imageUrl = "https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=800",
             latitude = 12.9930,
             longitude = 80.2318,
-            reportedAt = System.currentTimeMillis() - 172800000 // 2d ago
+            reportedAt = System.currentTimeMillis() - 172800000
         ),
         FoundItem(
             id = "f6",
@@ -78,7 +79,7 @@ class MockItemRepository : ItemRepository {
             imageUrl = "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=800",
             latitude = 12.9921,
             longitude = 80.2339,
-            reportedAt = System.currentTimeMillis() - 259200000 // 3d ago
+            reportedAt = System.currentTimeMillis() - 259200000
         )
     )
 
@@ -94,7 +95,7 @@ class MockItemRepository : ItemRepository {
             latitude = 12.9915,
             longitude = 80.2330,
             lostDate = System.currentTimeMillis() - 3600000,
-            reportedAt = System.currentTimeMillis() - 3600000 // 1h ago
+            reportedAt = System.currentTimeMillis() - 3600000
         ),
         LostItem(
             id = "l2",
@@ -107,7 +108,7 @@ class MockItemRepository : ItemRepository {
             latitude = 12.9940,
             longitude = 80.2350,
             lostDate = System.currentTimeMillis() - 10800000,
-            reportedAt = System.currentTimeMillis() - 10800000 // 3h ago
+            reportedAt = System.currentTimeMillis() - 10800000
         ),
         LostItem(
             id = "l3",
@@ -120,7 +121,7 @@ class MockItemRepository : ItemRepository {
             latitude = 12.9885,
             longitude = 80.2320,
             lostDate = System.currentTimeMillis() - 43200000,
-            reportedAt = System.currentTimeMillis() - 43200000 // 12h ago
+            reportedAt = System.currentTimeMillis() - 43200000
         ),
         LostItem(
             id = "l4",
@@ -133,7 +134,7 @@ class MockItemRepository : ItemRepository {
             latitude = 12.9890,
             longitude = 80.2335,
             lostDate = System.currentTimeMillis() - 129600000,
-            reportedAt = System.currentTimeMillis() - 129600000 // 1.5d ago
+            reportedAt = System.currentTimeMillis() - 129600000
         ),
         LostItem(
             id = "l5",
@@ -146,7 +147,7 @@ class MockItemRepository : ItemRepository {
             latitude = 12.9925,
             longitude = 80.2312,
             lostDate = System.currentTimeMillis() - 216000000,
-            reportedAt = System.currentTimeMillis() - 216000000 // 2.5d ago
+            reportedAt = System.currentTimeMillis() - 216000000
         ),
         LostItem(
             id = "l6",
@@ -159,7 +160,7 @@ class MockItemRepository : ItemRepository {
             latitude = 12.9880,
             longitude = 80.2360,
             lostDate = System.currentTimeMillis() - 345600000,
-            reportedAt = System.currentTimeMillis() - 345600000 // 4d ago
+            reportedAt = System.currentTimeMillis() - 345600000
         )
     )
 
@@ -245,5 +246,21 @@ class MockItemRepository : ItemRepository {
 
     override suspend fun getUserLostItems(userId: String): Result<List<LostItem>> {
         return Result.success(lostItems.filter { it.reporterId == userId })
+    }
+
+    override suspend fun searchUsers(query: String): Result<List<User>> {
+        return Result.success(emptyList())
+    }
+
+    override suspend fun getAllUsers(): Result<List<User>> {
+        return Result.success(emptyList())
+    }
+
+    override suspend fun updateUserRole(uid: String, role: String): Result<Unit> {
+        return Result.success(Unit)
+    }
+
+    override suspend fun deleteItemAsAdmin(itemId: String, isLostItem: Boolean): Result<Unit> {
+        return Result.success(Unit)
     }
 }

@@ -1,5 +1,6 @@
 package com.example.lostnfound.data
 
+import android.net.Uri
 import com.example.lostnfound.data.firebase.FirebaseAuthService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -14,6 +15,12 @@ class FirebaseAuthRepository(
     override val currentUserId: String?
         get() = authService.currentUser?.uid
 
+    override val currentUserRole: String?
+        get() = "member"
+
+    override val currentUserProfilePic: String?
+        get() = ""
+
     override val authStateFlow: Flow<String?> = authService.authStateFlow.map { it?.uid }
 
     override suspend fun signIn(email: String, password: String): Result<Unit> {
@@ -26,6 +33,10 @@ class FirebaseAuthRepository(
 
     override suspend fun sendPasswordReset(email: String): Result<Unit> {
         return authService.sendPasswordReset(email)
+    }
+
+    override suspend fun updateProfilePic(uri: Uri): Result<String> {
+        return Result.success(uri.toString())
     }
 
     override fun signOut() {

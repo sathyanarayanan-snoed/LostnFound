@@ -340,10 +340,39 @@ fun ItemDetailScreen(
                 }
             }
 
+            if (contact.isNotBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                androidx.compose.material3.OutlinedButton(
+                    onClick = { viewModel.toggleContactDialog() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.5.dp,
+                        MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(
+                        Icons.Outlined.ContactPhone,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(
+                        text = "Contact Finder",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
             if (uiState.isOwner && status == "active") {
                 Spacer(modifier = Modifier.height(8.dp))
                 AppButton(
-                    text = "Mark as Claimed",
+                    text = "Mark as Resolved",
                     onClick = { viewModel.markAsClaimed(itemId) },
                     isLoading = uiState.isLoading,
                     containerColor = AccentGreen
@@ -352,6 +381,62 @@ fun ItemDetailScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
+
+    if (uiState.showContactDialog) {
+        val contactName = if (isLostItem) uiState.lostItem?.ownerName.orEmpty() else uiState.foundItem?.finderName.orEmpty()
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { viewModel.toggleContactDialog() },
+            title = {
+                Text(
+                    text = "Contact Information",
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (contactName.isNotBlank()) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Icon(
+                                Icons.Outlined.Person,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = contactName,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Icon(
+                            Icons.Outlined.ContactPhone,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = contact,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { viewModel.toggleContactDialog() }) {
+                    Text("Close", fontWeight = FontWeight.Bold)
+                }
+            }
+        )
     }
 }
 

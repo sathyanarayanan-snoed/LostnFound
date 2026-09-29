@@ -20,3 +20,12 @@ data object ReportLostRoute : NavKey
 
 @Serializable
 data object ProfileRoute : NavKey
+
+@Serializable
+data class SuccessRoute(val isLostItem: Boolean) : NavKey
+
+@Serializable
+data object UserSearchRoute : NavKey
+
+@Serializable
+data object AdminPanelRoute : NavKey

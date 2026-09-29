@@ -9,5 +9,7 @@ data class User(
     val displayName: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     val postCount: Int = 0,
-    val lastPostTime: Long = 0L
+    val lastPostTime: Long = 0L,
+    val profilePicUrl: String = "",
+    val role: String = "member"
 )

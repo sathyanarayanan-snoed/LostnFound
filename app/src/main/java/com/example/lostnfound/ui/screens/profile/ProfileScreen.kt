@@ -1,6 +1,9 @@
 package com.example.lostnfound.ui.screens.profile
 
-import androidx.compose.foundation.border
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,10 +21,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.AdminPanelSettings
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Button
@@ -44,12 +48,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.lostnfound.data.ItemRepository
+import com.example.lostnfound.ui.components.AvatarImage
 import com.example.lostnfound.ui.theme.AccentGreen
 import com.example.lostnfound.ui.viewmodel.AuthViewModel
 
@@ -59,11 +62,18 @@ fun ProfileScreen(
     viewModel: AuthViewModel,
     itemRepository: ItemRepository,
     onBack: () -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onAdminClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var foundCount by remember { mutableIntStateOf(0) }
     var lostCount by remember { mutableIntStateOf(0) }
+
+    val photoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { viewModel.uploadProfilePic(it) }
+    }
 
     LaunchedEffect(uiState.userId) {
         val uid = uiState.userId ?: return@LaunchedEffect
@@ -113,26 +123,31 @@ fun ProfileScreen(
         ) {
             Spacer(modifier = Modifier.height(6.dp))
 
-            Surface(
+            Box(
                 modifier = Modifier
                     .size(108.dp)
-                    .clip(CircleShape)
-                    .shadow(10.dp, CircleShape)
-                    .border(
-                        2.5.dp,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-                        CircleShape
-                    ),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer
+                    .clickable { photoPicker.launch("image/*") },
+                contentAlignment = Alignment.BottomEnd
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        Icons.Outlined.Person,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier.size(60.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                AvatarImage(
+                    imageUrl = uiState.profilePicUrl,
+                    displayName = uiState.displayName ?: "User",
+                    size = 108.dp
+                )
+                Surface(
+                    modifier = Modifier.size(32.dp),
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    shadowElevation = 4.dp
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Outlined.PhotoCamera,
+                            contentDescription = "Change photo",
+                            modifier = Modifier.size(18.dp),
+                            tint = Color.White
+                        )
+                    }
                 }
             }
 
@@ -149,7 +164,7 @@ fun ProfileScreen(
                 Surface(
                     shape = RoundedCornerShape(12.dp),
                     color = AccentGreen.copy(alpha = 0.12f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, AccentGreen.copy(alpha = 0.35f))
+                    border = BorderStroke(1.dp, AccentGreen.copy(alpha = 0.35f))
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
@@ -181,7 +196,7 @@ fun ProfileScreen(
                     shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.surface,
                     shadowElevation = 2.dp,
-                    border = androidx.compose.foundation.BorderStroke(
+                    border = BorderStroke(
                         0.75.dp,
                         MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
                     )
@@ -216,7 +231,7 @@ fun ProfileScreen(
                     shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.surface,
                     shadowElevation = 2.dp,
-                    border = androidx.compose.foundation.BorderStroke(
+                    border = BorderStroke(
                         0.75.dp,
                         MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
                     )
@@ -252,7 +267,7 @@ fun ProfileScreen(
                 shape = RoundedCornerShape(20.dp),
                 color = MaterialTheme.colorScheme.surface,
                 shadowElevation = 3.dp,
-                border = androidx.compose.foundation.BorderStroke(
+                border = BorderStroke(
                     0.75.dp,
                     MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)
                 )
@@ -319,7 +334,11 @@ fun ProfileScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Campus Community Member",
+                                text = when (uiState.role) {
+                                    "admin" -> "Administrator"
+                                    "moderator" -> "Campus Moderator"
+                                    else -> "Campus Community Member"
+                                },
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface
@@ -329,7 +348,34 @@ fun ProfileScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            if (uiState.role == "admin") {
+                Button(
+                    onClick = onAdminClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(
+                        Icons.Outlined.AdminPanelSettings,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = Color.White
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(
+                        text = "Open Admin Panel",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             Button(
                 onClick = {

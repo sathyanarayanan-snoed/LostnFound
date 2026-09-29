@@ -2,10 +2,12 @@ package com.example.lostnfound.data
 
 import com.example.lostnfound.data.network.ApiClient
 import com.example.lostnfound.data.network.IdResponse
+import com.example.lostnfound.data.network.UpdateRoleRequest
 import com.example.lostnfound.data.network.UserItemsResponse
 import com.example.lostnfound.domain.model.FoundItem
 import com.example.lostnfound.domain.model.LostItem
 import com.example.lostnfound.domain.model.SearchFilters
+import com.example.lostnfound.domain.model.User
 import kotlinx.serialization.encodeToString
 import java.net.URLEncoder
 
@@ -110,5 +112,32 @@ class HttpItemRepository(
             val res = apiClient.json.decodeFromString<UserItemsResponse>(jsonStr)
             res.lost
         }
+    }
+
+    override suspend fun searchUsers(query: String): Result<List<User>> {
+        val encoded = URLEncoder.encode(query, "UTF-8")
+        val result = apiClient.get("/api/users/search?q=$encoded", authRepository.token)
+        return result.mapCatching { jsonStr ->
+            apiClient.json.decodeFromString<List<User>>(jsonStr)
+        }
+    }
+
+    override suspend fun getAllUsers(): Result<List<User>> {
+        val result = apiClient.get("/api/admin/users", authRepository.token)
+        return result.mapCatching { jsonStr ->
+            apiClient.json.decodeFromString<List<User>>(jsonStr)
+        }
+    }
+
+    override suspend fun updateUserRole(uid: String, role: String): Result<Unit> {
+        val body = apiClient.json.encodeToString(UpdateRoleRequest(role))
+        val result = apiClient.put("/api/admin/users/$uid/role", body, authRepository.token)
+        return result.map { Unit }
+    }
+
+    override suspend fun deleteItemAsAdmin(itemId: String, isLostItem: Boolean): Result<Unit> {
+        val type = if (isLostItem) "lost" else "found"
+        val result = apiClient.delete("/api/admin/items/$type/$itemId", authRepository.token)
+        return result.map { Unit }
     }
 }

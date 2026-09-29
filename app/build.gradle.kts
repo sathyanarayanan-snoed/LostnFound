@@ -85,8 +85,6 @@ dependencies {
   implementation(libs.firebase.appcheck.playintegrity)
   debugImplementation(libs.firebase.appcheck.debug)
 
-  implementation(libs.osmdroid.android)
-
   implementation(libs.coil.compose)
   implementation(libs.coil.network.okhttp)
 

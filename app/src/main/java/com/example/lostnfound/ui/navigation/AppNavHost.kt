@@ -10,17 +10,22 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.lostnfound.LostnFoundApplication
+import com.example.lostnfound.ui.screens.admin.AdminPanelScreen
 import com.example.lostnfound.ui.screens.auth.LoginScreen
 import com.example.lostnfound.ui.screens.detail.ItemDetailScreen
 import com.example.lostnfound.ui.screens.feed.FeedScreen
 import com.example.lostnfound.ui.screens.profile.ProfileScreen
 import com.example.lostnfound.ui.screens.report.ReportFoundScreen
 import com.example.lostnfound.ui.screens.report.ReportLostScreen
+import com.example.lostnfound.ui.screens.report.SuccessScreen
+import com.example.lostnfound.ui.screens.search.UserSearchScreen
+import com.example.lostnfound.ui.viewmodel.AdminViewModel
 import com.example.lostnfound.ui.viewmodel.AuthViewModel
 import com.example.lostnfound.ui.viewmodel.FeedViewModel
 import com.example.lostnfound.ui.viewmodel.ItemDetailViewModel
 import com.example.lostnfound.ui.viewmodel.ReportFoundViewModel
 import com.example.lostnfound.ui.viewmodel.ReportLostViewModel
+import com.example.lostnfound.ui.viewmodel.UserSearchViewModel
 import com.example.lostnfound.ui.viewmodel.ViewModelFactory
 
 @Composable
@@ -58,7 +63,8 @@ fun AppNavHost() {
                     },
                     onReportFound = { backStack.add(ReportFoundRoute) },
                     onReportLost = { backStack.add(ReportLostRoute) },
-                    onProfileClick = { backStack.add(ProfileRoute) }
+                    onProfileClick = { backStack.add(ProfileRoute) },
+                    onSearchUsersClick = { backStack.add(UserSearchRoute) }
                 )
             }
             entry<ItemDetailRoute> { route ->
@@ -75,7 +81,10 @@ fun AppNavHost() {
                 ReportFoundScreen(
                     viewModel = reportFoundViewModel,
                     onBack = { backStack.removeLastOrNull() },
-                    onSuccess = { backStack.removeLastOrNull() }
+                    onSuccess = {
+                        backStack.removeLastOrNull()
+                        backStack.add(SuccessRoute(isLostItem = false))
+                    }
                 )
             }
             entry<ReportLostRoute> {
@@ -83,7 +92,23 @@ fun AppNavHost() {
                 ReportLostScreen(
                     viewModel = reportLostViewModel,
                     onBack = { backStack.removeLastOrNull() },
-                    onSuccess = { backStack.removeLastOrNull() }
+                    onSuccess = {
+                        backStack.removeLastOrNull()
+                        backStack.add(SuccessRoute(isLostItem = true))
+                    }
+                )
+            }
+            entry<SuccessRoute> { route ->
+                SuccessScreen(
+                    isLostItem = route.isLostItem,
+                    onViewPosts = {
+                        backStack.removeLastOrNull()
+                        backStack.add(ProfileRoute)
+                    },
+                    onBackToHome = {
+                        backStack.clear()
+                        backStack.add(FeedRoute)
+                    }
                 )
             }
             entry<ProfileRoute> {
@@ -94,7 +119,22 @@ fun AppNavHost() {
                     onSignOut = {
                         backStack.clear()
                         backStack.add(LoginRoute)
-                    }
+                    },
+                    onAdminClick = { backStack.add(AdminPanelRoute) }
+                )
+            }
+            entry<UserSearchRoute> {
+                val userSearchViewModel: UserSearchViewModel = viewModel(factory = factory)
+                UserSearchScreen(
+                    viewModel = userSearchViewModel,
+                    onBack = { backStack.removeLastOrNull() }
+                )
+            }
+            entry<AdminPanelRoute> {
+                val adminViewModel: AdminViewModel = viewModel(factory = factory)
+                AdminPanelScreen(
+                    viewModel = adminViewModel,
+                    onBack = { backStack.removeLastOrNull() }
                 )
             }
         }
