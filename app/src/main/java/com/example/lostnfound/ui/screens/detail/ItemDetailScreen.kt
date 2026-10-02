@@ -1,7 +1,6 @@
 package com.example.lostnfound.ui.screens.detail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,12 +26,15 @@ import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,6 +54,9 @@ import coil3.compose.AsyncImage
 import com.example.lostnfound.ui.components.AppButton
 import com.example.lostnfound.ui.components.LocationPicker
 import com.example.lostnfound.ui.theme.AccentGreen
+import com.example.lostnfound.ui.theme.AppElevation
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 import com.example.lostnfound.ui.theme.PrimaryLight
 import com.example.lostnfound.ui.theme.SecondaryLight
 import com.example.lostnfound.ui.theme.WarningAmber
@@ -129,7 +134,7 @@ fun ItemDetailScreen(
                     Text(
                         text = if (isLostItem) "LOST" else "FOUND",
                         style = MaterialTheme.typography.displayLarge,
-                        color = Color.White.copy(alpha = 0.35f),
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.35f),
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -162,11 +167,10 @@ fun ItemDetailScreen(
             IconButton(
                 onClick = onBack,
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(AppSpacing.LG)
                     .align(Alignment.TopStart)
                     .size(44.dp)
-                    .shadow(8.dp, CircleShape)
-                    .border(1.dp, Color.White.copy(alpha = 0.4f), CircleShape)
+                    .shadow(AppElevation.Medium, CircleShape)
                     .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
             ) {
                 Icon(
@@ -179,17 +183,17 @@ fun ItemDetailScreen(
             Surface(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(16.dp),
-                shape = RoundedCornerShape(14.dp),
+                    .padding(AppSpacing.LG),
+                shape = RoundedCornerShape(AppRadius.MD),
                 color = if (isLostItem) SecondaryLight else AccentGreen,
-                shadowElevation = 6.dp
+                shadowElevation = AppElevation.Low
             ) {
                 Text(
                     text = if (isLostItem) "Lost Item" else "Found Item",
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = AppSpacing.MD, vertical = AppSpacing.XS)
                 )
             }
         }
@@ -197,13 +201,13 @@ fun ItemDetailScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = AppSpacing.XL, vertical = AppSpacing.SM),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.LG)
         ) {
             Text(
                 text = description,
                 style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.SemiBold,
                     lineHeight = 28.sp
                 ),
                 color = MaterialTheme.colorScheme.onSurface
@@ -211,21 +215,21 @@ fun ItemDetailScreen(
 
             if (status == "claimed") {
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(AppRadius.LG),
                     color = AccentGreen.copy(alpha = 0.12f),
                     border = androidx.compose.foundation.BorderStroke(1.dp, AccentGreen.copy(alpha = 0.35f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier.padding(14.dp),
+                        modifier = Modifier.padding(AppSpacing.MD),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
                     ) {
                         Icon(Icons.Outlined.CheckCircle, "Claimed", tint = AccentGreen)
                         Text(
                             text = "This item has been successfully claimed",
                             color = AccentGreen,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
@@ -233,15 +237,15 @@ fun ItemDetailScreen(
 
             if (isLostItem && uiState.lostItem?.flagged == true) {
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(AppRadius.LG),
                     color = WarningAmber.copy(alpha = 0.12f),
                     border = androidx.compose.foundation.BorderStroke(1.dp, WarningAmber.copy(alpha = 0.35f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier.padding(14.dp),
+                        modifier = Modifier.padding(AppSpacing.MD),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
                     ) {
                         Icon(Icons.Outlined.Warning, "Flagged", tint = WarningAmber)
                         Text(
@@ -254,7 +258,7 @@ fun ItemDetailScreen(
                 }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.SM)) {
                 DetailRow(Icons.Outlined.Category, "Category", category.replace("_", " ").lowercase().replaceFirstChar { it.uppercase() })
                 DetailRow(Icons.Outlined.CalendarToday, "Reported Date", dateFormatter.format(Date(reportedAt)))
 
@@ -268,26 +272,23 @@ fun ItemDetailScreen(
 
                 if (isLostItem && uiState.lostItem != null) {
                     DetailRow(Icons.Outlined.Person, "Reported By", uiState.lostItem!!.ownerName)
+                    DetailRow(Icons.Outlined.LocationOn, "Last Seen Location", uiState.lostItem!!.lastSeenLocation)
                     DetailRow(Icons.Outlined.CalendarToday, "Date Lost", dateFormatter.format(Date(uiState.lostItem!!.lostDate)))
                     if (contact.isNotBlank()) {
                         DetailRow(Icons.Outlined.ContactPhone, "Owner Contact", contact)
                     }
                     if (uiState.isOwner) {
                         Surface(
-                            shape = RoundedCornerShape(18.dp),
+                            shape = RoundedCornerShape(AppRadius.LG),
                             color = MaterialTheme.colorScheme.surface,
-                            shadowElevation = 3.dp,
-                            border = androidx.compose.foundation.BorderStroke(
-                                0.75.dp,
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                            ),
+                            shadowElevation = AppElevation.Low,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 4.dp)
+                                .padding(top = AppSpacing.XS)
                         ) {
                             Column(
-                                modifier = Modifier.padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                modifier = Modifier.padding(AppSpacing.LG),
+                                verticalArrangement = Arrangement.spacedBy(AppSpacing.SM)
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
@@ -296,11 +297,11 @@ fun ItemDetailScreen(
                                         tint = PrimaryLight,
                                         modifier = Modifier.size(18.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Spacer(modifier = Modifier.width(AppSpacing.SM))
                                     Text(
                                         text = "Proof of Ownership",
                                         style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
+                                        fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
@@ -316,20 +317,16 @@ fun ItemDetailScreen(
             }
 
             if (lat != null && lon != null) {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.XS))
                 Text(
                     text = "Campus Map Location",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Surface(
-                    shape = RoundedCornerShape(18.dp),
-                    border = androidx.compose.foundation.BorderStroke(
-                        0.75.dp,
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    ),
-                    modifier = Modifier.clip(RoundedCornerShape(18.dp))
+                    shape = RoundedCornerShape(AppRadius.LG),
+                    modifier = Modifier.clip(RoundedCornerShape(AppRadius.LG))
                 ) {
                     LocationPicker(
                         onLocationSelected = { _, _ -> },
@@ -341,13 +338,13 @@ fun ItemDetailScreen(
             }
 
             if (contact.isNotBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                androidx.compose.material3.OutlinedButton(
+                Spacer(modifier = Modifier.height(AppSpacing.SM))
+                OutlinedButton(
                     onClick = { viewModel.toggleContactDialog() },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(16.dp),
+                        .height(54.dp),
+                    shape = RoundedCornerShape(AppRadius.LG),
                     border = androidx.compose.foundation.BorderStroke(
                         1.5.dp,
                         MaterialTheme.colorScheme.primary
@@ -359,18 +356,18 @@ fun ItemDetailScreen(
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
-                    Spacer(modifier = Modifier.size(8.dp))
+                    Spacer(modifier = Modifier.size(AppSpacing.SM))
                     Text(
-                        text = "Contact Finder",
+                        text = if (isLostItem) "Contact Owner" else "Contact Finder",
                         style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
 
             if (uiState.isOwner && status == "active") {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.SM))
                 AppButton(
                     text = "Mark as Resolved",
                     onClick = { viewModel.markAsClaimed(itemId) },
@@ -379,26 +376,26 @@ fun ItemDetailScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.XXL))
         }
     }
 
     if (uiState.showContactDialog) {
         val contactName = if (isLostItem) uiState.lostItem?.ownerName.orEmpty() else uiState.foundItem?.finderName.orEmpty()
-        androidx.compose.material3.AlertDialog(
+        AlertDialog(
             onDismissRequest = { viewModel.toggleContactDialog() },
             title = {
                 Text(
                     text = "Contact Information",
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.SemiBold
                 )
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.MD)) {
                     if (contactName.isNotBlank()) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
                         ) {
                             Icon(
                                 Icons.Outlined.Person,
@@ -415,7 +412,7 @@ fun ItemDetailScreen(
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
                     ) {
                         Icon(
                             Icons.Outlined.ContactPhone,
@@ -432,8 +429,8 @@ fun ItemDetailScreen(
                 }
             },
             confirmButton = {
-                androidx.compose.material3.TextButton(onClick = { viewModel.toggleContactDialog() }) {
-                    Text("Close", fontWeight = FontWeight.Bold)
+                TextButton(onClick = { viewModel.toggleContactDialog() }) {
+                    Text("Close", fontWeight = FontWeight.SemiBold)
                 }
             }
         )
@@ -445,21 +442,17 @@ private fun DetailRow(icon: ImageVector, label: String, value: String) {
     if (value.isBlank()) return
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(AppRadius.LG),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 2.dp,
-        border = androidx.compose.foundation.BorderStroke(
-            0.75.dp,
-            MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)
-        )
+        shadowElevation = AppElevation.Low
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-            modifier = Modifier.padding(14.dp)
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.MD),
+            modifier = Modifier.padding(AppSpacing.MD)
         ) {
             Surface(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(AppRadius.MD),
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
                 modifier = Modifier.size(42.dp)
             ) {

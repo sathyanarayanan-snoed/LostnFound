@@ -2,7 +2,6 @@ package com.example.lostnfound.ui.screens.feed
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -32,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +39,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.lostnfound.ui.components.TimeElapsedBadge
 import com.example.lostnfound.ui.theme.AccentGreen
+import com.example.lostnfound.ui.theme.AppElevation
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 import com.example.lostnfound.ui.theme.PrimaryLight
 import com.example.lostnfound.ui.theme.SecondaryLight
 import com.example.lostnfound.ui.viewmodel.FeedItem
@@ -54,7 +55,7 @@ fun ItemCard(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.97f else 1f,
+        targetValue = if (isPressed) 0.98f else 1f,
         label = "cardScale"
     )
 
@@ -62,35 +63,30 @@ fun ItemCard(
         modifier = modifier
             .fillMaxWidth()
             .scale(scale)
-            .padding(horizontal = 4.dp, vertical = 5.dp)
+            .padding(horizontal = AppSpacing.MD, vertical = AppSpacing.SM)
             .shadow(
-                elevation = if (isPressed) 1.dp else 3.dp,
-                shape = RoundedCornerShape(18.dp),
+                elevation = if (isPressed) 1.dp else AppElevation.Low,
+                shape = RoundedCornerShape(AppRadius.LG),
                 spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-            )
-            .border(
-                width = 0.75.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
-                shape = RoundedCornerShape(18.dp)
             )
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick
             ),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(AppRadius.LG),
         color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
+                .padding(AppSpacing.MD),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .clip(RoundedCornerShape(14.dp))
+                    .clip(RoundedCornerShape(AppRadius.MD))
             ) {
                 if (item.imageUrl.isNotBlank()) {
                     AsyncImage(
@@ -117,7 +113,7 @@ fun ItemCard(
                                         )
                                 )
                             )
-                            .padding(6.dp),
+                            .padding(AppSpacing.SM),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -125,7 +121,7 @@ fun ItemCard(
                                 .replaceFirstChar { it.uppercase() },
                             style = MaterialTheme.typography.labelSmall,
                             color = if (item.isLostItem) SecondaryLight else PrimaryLight,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             textAlign = TextAlign.Center,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -134,7 +130,7 @@ fun ItemCard(
                 }
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(AppSpacing.MD))
 
             Column(
                 modifier = Modifier.weight(1f),
@@ -143,7 +139,7 @@ fun ItemCard(
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface
@@ -159,7 +155,7 @@ fun ItemCard(
                             modifier = Modifier.size(14.dp),
                             tint = MaterialTheme.colorScheme.primary
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(AppSpacing.XS))
                         Text(
                             text = item.location,
                             style = MaterialTheme.typography.bodySmall,
@@ -177,15 +173,15 @@ fun ItemCard(
                 ) {
                     TimeElapsedBadge(reportedAt = item.reportedAt)
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(AppRadius.SM),
                         color = if (item.isLostItem) SecondaryLight else AccentGreen
                     ) {
                         Text(
                             text = if (item.isLostItem) "Lost" else "Found",
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            modifier = Modifier.padding(horizontal = AppSpacing.SM, vertical = AppSpacing.XS),
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }

@@ -48,12 +48,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.lostnfound.data.ItemRepository
 import com.example.lostnfound.ui.components.AvatarImage
 import com.example.lostnfound.ui.theme.AccentGreen
+import com.example.lostnfound.ui.theme.AppElevation
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 import com.example.lostnfound.ui.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,13 +93,13 @@ fun ProfileScreen(
                     Text(
                         text = "User Profile",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.SemiBold
                     )
                 },
                 navigationIcon = {
                     IconButton(
                         onClick = onBack,
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier.padding(start = AppSpacing.SM)
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
@@ -117,11 +120,11 @@ fun ProfileScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 20.dp),
+                .padding(horizontal = AppSpacing.XL, vertical = AppSpacing.LG),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.LG)
         ) {
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.XS))
 
             Box(
                 modifier = Modifier
@@ -138,14 +141,14 @@ fun ProfileScreen(
                     modifier = Modifier.size(32.dp),
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.primary,
-                    shadowElevation = 4.dp
+                    shadowElevation = AppElevation.Medium
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             Icons.Outlined.PhotoCamera,
                             contentDescription = "Change photo",
                             modifier = Modifier.size(18.dp),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -153,23 +156,23 @@ fun ProfileScreen(
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.XS)
             ) {
                 Text(
                     text = uiState.displayName ?: "Campus Member",
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(AppRadius.MD),
                     color = AccentGreen.copy(alpha = 0.12f),
                     border = BorderStroke(1.dp, AccentGreen.copy(alpha = 0.35f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        modifier = Modifier.padding(horizontal = AppSpacing.MD, vertical = AppSpacing.XS),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
                     ) {
                         Icon(
                             Icons.Outlined.CheckCircle,
@@ -181,7 +184,7 @@ fun ProfileScreen(
                             text = "Verified Institutional Account",
                             style = MaterialTheme.typography.labelSmall,
                             color = AccentGreen,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
@@ -189,22 +192,18 @@ fun ProfileScreen(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.MD)
             ) {
                 Surface(
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(AppRadius.LG),
                     color = MaterialTheme.colorScheme.surface,
-                    shadowElevation = 2.dp,
-                    border = BorderStroke(
-                        0.75.dp,
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
-                    )
+                    shadowElevation = AppElevation.Low
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(AppSpacing.LG),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AppSpacing.XS)
                     ) {
                         Icon(
                             Icons.Outlined.Inventory2,
@@ -214,7 +213,7 @@ fun ProfileScreen(
                         )
                         Text(
                             text = "$foundCount",
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.displayLarge.copy(fontSize = 28.sp),
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -228,18 +227,14 @@ fun ProfileScreen(
 
                 Surface(
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(AppRadius.LG),
                     color = MaterialTheme.colorScheme.surface,
-                    shadowElevation = 2.dp,
-                    border = BorderStroke(
-                        0.75.dp,
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
-                    )
+                    shadowElevation = AppElevation.Low
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(AppSpacing.LG),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(AppSpacing.XS)
                     ) {
                         Icon(
                             Icons.Outlined.Search,
@@ -249,7 +244,7 @@ fun ProfileScreen(
                         )
                         Text(
                             text = "$lostCount",
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.displayLarge.copy(fontSize = 28.sp),
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -264,24 +259,20 @@ fun ProfileScreen(
 
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(AppRadius.LG),
                 color = MaterialTheme.colorScheme.surface,
-                shadowElevation = 3.dp,
-                border = BorderStroke(
-                    0.75.dp,
-                    MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)
-                )
+                shadowElevation = AppElevation.Low
             ) {
                 Column(
-                    modifier = Modifier.padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    modifier = Modifier.padding(AppSpacing.LG),
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.LG)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.MD)
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(AppRadius.MD),
                             color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
                             modifier = Modifier.size(42.dp)
                         ) {
@@ -311,10 +302,10 @@ fun ProfileScreen(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.MD)
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(AppRadius.MD),
                             color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
                             modifier = Modifier.size(42.dp)
                         ) {
@@ -354,7 +345,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(54.dp),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(AppRadius.LG),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
@@ -363,19 +354,19 @@ fun ProfileScreen(
                         Icons.Outlined.AdminPanelSettings,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
-                    Spacer(modifier = Modifier.size(8.dp))
+                    Spacer(modifier = Modifier.size(AppSpacing.SM))
                     Text(
                         text = "Open Admin Panel",
                         style = MaterialTheme.typography.labelLarge,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.XS))
 
             Button(
                 onClick = {
@@ -385,7 +376,7 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(AppRadius.LG),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error
                 )
@@ -394,14 +385,14 @@ fun ProfileScreen(
                     Icons.AutoMirrored.Outlined.Logout,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
-                Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(AppSpacing.SM))
                 Text(
                     text = "Sign Out of Portal",
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }

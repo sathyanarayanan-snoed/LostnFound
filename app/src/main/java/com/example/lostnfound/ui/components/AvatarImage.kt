@@ -61,7 +61,7 @@ fun AvatarImage(
                     fontSize = (size.value * 0.45f).sp
                 ),
                 color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
         }
     }

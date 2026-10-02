@@ -1,7 +1,6 @@
 package com.example.lostnfound.ui.screens.search
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -48,7 +46,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lostnfound.domain.model.User
 import com.example.lostnfound.ui.components.AvatarImage
+import com.example.lostnfound.ui.components.EmptyStateView
 import com.example.lostnfound.ui.theme.AccentGreen
+import com.example.lostnfound.ui.theme.AppElevation
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 import com.example.lostnfound.ui.viewmodel.UserSearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,11 +68,11 @@ fun UserSearchScreen(
                     Text(
                         text = "Find Campus Members",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.SemiBold
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack, modifier = Modifier.padding(start = 8.dp)) {
+                    IconButton(onClick = onBack, modifier = Modifier.padding(start = AppSpacing.SM)) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
@@ -93,14 +95,13 @@ fun UserSearchScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 8.dp)
-                    .shadow(6.dp, RoundedCornerShape(22.dp)),
-                shape = RoundedCornerShape(22.dp),
-                color = MaterialTheme.colorScheme.surface,
-                border = BorderStroke(0.75.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+                    .padding(horizontal = AppSpacing.XL, vertical = AppSpacing.SM)
+                    .shadow(AppElevation.Medium, RoundedCornerShape(AppRadius.Full)),
+                shape = RoundedCornerShape(AppRadius.Full),
+                color = MaterialTheme.colorScheme.surface
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                    modifier = Modifier.padding(horizontal = AppSpacing.SM, vertical = AppSpacing.XXS),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextField(
@@ -124,7 +125,7 @@ fun UserSearchScreen(
                             if (uiState.query.isNotEmpty()) {
                                 IconButton(
                                     onClick = { viewModel.clearSearch() },
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(44.dp)
                                 ) {
                                     Icon(
                                         Icons.Outlined.Close,
@@ -151,8 +152,8 @@ fun UserSearchScreen(
                     text = "${uiState.users.size} members found",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 6.dp)
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(horizontal = AppSpacing.XXL, vertical = AppSpacing.XS)
                 )
             }
 
@@ -162,45 +163,16 @@ fun UserSearchScreen(
                         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
                 } else if (uiState.users.isEmpty()) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Surface(
-                            modifier = Modifier.size(76.dp),
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    Icons.Outlined.PersonSearch,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(38.dp),
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(14.dp))
-                        Text(
-                            text = if (uiState.query.isBlank()) "Search for Members" else "No Members Found",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = if (uiState.query.isBlank()) "Type a name or email address to locate campus community members." else "No users matched \"${uiState.query}\". Try another search term.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-                    }
+                    EmptyStateView(
+                        icon = Icons.Outlined.PersonSearch,
+                        title = if (uiState.query.isBlank()) "Search for Members" else "No Members Found",
+                        subtitle = if (uiState.query.isBlank()) "Type a name or email address to locate campus community members." else "No users matched \"${uiState.query}\". Try another search term.",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 } else {
                     LazyColumn(
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        contentPadding = PaddingValues(horizontal = AppSpacing.XL, vertical = AppSpacing.SM),
+                        verticalArrangement = Arrangement.spacedBy(AppSpacing.SM),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(uiState.users, key = { it.uid }) { user ->
@@ -217,15 +189,14 @@ fun UserSearchScreen(
 private fun UserCard(user: User) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(AppRadius.LG),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 2.dp,
-        border = BorderStroke(0.75.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
+        shadowElevation = AppElevation.Low
     ) {
         Row(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier.padding(AppSpacing.MD),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp)
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.MD)
         ) {
             AvatarImage(
                 imageUrl = user.profilePicUrl,
@@ -236,12 +207,12 @@ private fun UserCard(user: User) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
                 ) {
                     Text(
                         text = user.displayName.ifBlank { "Campus Member" },
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -249,13 +220,13 @@ private fun UserCard(user: User) {
 
                     if (user.role == "admin" || user.role == "moderator") {
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(AppRadius.SM),
                             color = if (user.role == "admin") MaterialTheme.colorScheme.primaryContainer else AccentGreen.copy(alpha = 0.15f)
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                                horizontalArrangement = Arrangement.spacedBy(AppSpacing.XXS)
                             ) {
                                 Icon(
                                     Icons.Outlined.Shield,
@@ -266,7 +237,7 @@ private fun UserCard(user: User) {
                                 Text(
                                     text = user.role.uppercase(),
                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
-                                    fontWeight = FontWeight.ExtraBold,
+                                    fontWeight = FontWeight.SemiBold,
                                     color = if (user.role == "admin") MaterialTheme.colorScheme.primary else AccentGreen
                                 )
                             }
@@ -274,7 +245,7 @@ private fun UserCard(user: User) {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.XXS))
 
                 Text(
                     text = user.email,
@@ -287,15 +258,15 @@ private fun UserCard(user: User) {
 
             if (user.postCount > 0) {
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(AppRadius.SM),
                     color = MaterialTheme.colorScheme.surfaceVariant
                 ) {
                     Text(
                         text = "${user.postCount} posts",
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold,
+                        fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = AppSpacing.SM, vertical = AppSpacing.XS)
                     )
                 }
             }

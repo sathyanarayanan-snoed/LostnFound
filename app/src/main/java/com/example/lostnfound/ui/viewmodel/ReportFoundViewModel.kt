@@ -152,4 +152,11 @@ class ReportFoundViewModel(
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null, isRateLimited = false)
     }
+
+    fun resetForm() {
+        _uiState.value = ReportFoundUiState(
+            finderName = _uiState.value.finderName,
+            finderContact = _uiState.value.finderContact
+        )
+    }
 }

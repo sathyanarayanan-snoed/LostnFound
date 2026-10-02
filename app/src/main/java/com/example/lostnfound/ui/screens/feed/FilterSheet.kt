@@ -27,12 +27,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.example.lostnfound.domain.model.ItemCategory
 import com.example.lostnfound.domain.model.SearchFilters
 import com.example.lostnfound.ui.components.AppButton
 import com.example.lostnfound.ui.components.AppTextField
 import com.example.lostnfound.ui.components.CategoryChip
+import com.example.lostnfound.ui.theme.AppElevation
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -49,27 +51,27 @@ fun FilterSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        tonalElevation = 6.dp
+        shape = RoundedCornerShape(topStart = AppRadius.Full, topEnd = AppRadius.Full),
+        tonalElevation = AppElevation.High
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp)
+                .padding(horizontal = AppSpacing.XXL)
+                .padding(bottom = AppSpacing.XXXL)
         ) {
             Text(
                 text = "Filter Items",
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.LG))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
             ) {
                 Icon(
                     Icons.Outlined.Category,
@@ -79,16 +81,16 @@ fun FilterSheet(
                 Text(
                     text = "Category",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.MD))
 
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.SM)
             ) {
                 CategoryChip(
                     label = "All Categories",
@@ -106,7 +108,7 @@ fun FilterSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.XL))
 
             AppTextField(
                 value = location,
@@ -121,7 +123,7 @@ fun FilterSheet(
                 }
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.XXL))
 
             AppButton(
                 text = "Apply Filters",
@@ -135,7 +137,7 @@ fun FilterSheet(
                 }
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.MD))
 
             AppButton(
                 text = "Reset Filters",

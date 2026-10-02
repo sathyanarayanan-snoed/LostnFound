@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 8080;
 const JWT_SECRET = process.env.JWT_SECRET || 'lostnfound_secret_key_2026';
 const ONE_HOUR_MS = 3600000;
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-const MAX_POSTS_PER_HOUR = 5;
+const MAX_POSTS_PER_HOUR = 100;
 
 const dataDir = path.join(__dirname, 'data');
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -73,8 +73,11 @@ db.serialize(() => {
     expires_at INTEGER,
     claimed INTEGER DEFAULT 0,
     status TEXT DEFAULT 'active',
-    flagged INTEGER DEFAULT 0
+    flagged INTEGER DEFAULT 0,
+    last_seen_location TEXT DEFAULT ''
   )`);
+
+  db.run(`ALTER TABLE lost_items ADD COLUMN last_seen_location TEXT DEFAULT ''`, () => {});
 });
 
 const app = express();
@@ -285,7 +288,8 @@ app.get('/api/items/lost', (req, res) => {
       expiresAt: r.expires_at,
       claimed: Boolean(r.claimed),
       status: r.status,
-      flagged: Boolean(r.flagged)
+      flagged: Boolean(r.flagged),
+      lastSeenLocation: r.last_seen_location || ''
     }));
     res.json(items);
   });
@@ -336,14 +340,14 @@ app.post('/api/items/lost', (req, res) => {
     const flagged = proof.length < 20 ? 1 : 0;
 
     const sql = `INSERT INTO lost_items 
-      (id, reporter_id, owner_name, owner_contact, description, category, image_url, proof_of_ownership, proof_image_url, latitude, longitude, lost_date, reported_at, expires_at, claimed, status, flagged)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'active', ?)`;
+      (id, reporter_id, owner_name, owner_contact, description, category, image_url, proof_of_ownership, proof_image_url, latitude, longitude, lost_date, reported_at, expires_at, claimed, status, flagged, last_seen_location)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'active', ?, ?)`;
 
     db.run(sql, [
       id, reporterId, item.ownerName || '', item.ownerContact || '',
       item.description || '', item.category || 'OTHER', item.imageUrl || '',
       proof, item.proofImageUrl || '', item.latitude || null, item.longitude || null,
-      item.lostDate || now, now, expiresAt, flagged
+      item.lostDate || now, now, expiresAt, flagged, item.lastSeenLocation || ''
     ], function(err) {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ id });
@@ -395,7 +399,8 @@ app.get('/api/items/lost/:id', (req, res) => {
       expiresAt: r.expires_at,
       claimed: Boolean(r.claimed),
       status: r.status,
-      flagged: Boolean(r.flagged)
+      flagged: Boolean(r.flagged),
+      lastSeenLocation: r.last_seen_location || ''
     });
   });
 });
@@ -456,7 +461,8 @@ app.get('/api/users/:uid/items', (req, res) => {
           expiresAt: r.expires_at,
           claimed: Boolean(r.claimed),
           status: r.status,
-          flagged: Boolean(r.flagged)
+          flagged: Boolean(r.flagged),
+          lastSeenLocation: r.last_seen_location || ''
         }))
       });
     });

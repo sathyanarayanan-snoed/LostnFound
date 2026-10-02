@@ -3,47 +3,102 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="leaflet.css"/>
+<script src="leaflet.js"></script>
 <style>
-  * { margin: 0; padding: 0; }
-  html, body { width: 100%; height: 100%; overflow: hidden; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #e5e7eb; }
   #map { width: 100%; height: 100%; }
+  .custom-pin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pin-marker {
+    background: #2563EB;
+    width: 26px;
+    height: 26px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2.5px solid #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pin-dot {
+    width: 7px;
+    height: 7px;
+    background: #ffffff;
+    border-radius: 50%;
+  }
 </style>
 </head>
 <body>
 <div id="map"></div>
 <script>
-var map = L.map('map', {
-  zoomControl: false,
-  attributionControl: false
-}).setView([12.9915, 80.2337], 17);
-
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19
-}).addTo(map);
-
-var marker = L.marker([12.9915, 80.2337]).addTo(map);
+var map = null;
+var marker = null;
 var readOnly = false;
+var pinIcon = L.divIcon({
+  className: 'custom-pin',
+  html: '<div class="pin-marker"><div class="pin-dot"></div></div>',
+  iconSize: [26, 26],
+  iconAnchor: [13, 26]
+});
 
 function initMap(lat, lng, isReadOnly) {
   readOnly = isReadOnly;
-  map.setView([lat, lng], 17);
-  marker.setLatLng([lat, lng]);
-  if (!readOnly) {
+  var targetLat = lat || 12.9915;
+  var targetLng = lng || 80.2337;
+
+  if (!map) {
+    map = L.map('map', {
+      zoomControl: false,
+      attributionControl: false,
+      fadeAnimation: true,
+      zoomAnimation: true
+    }).setView([targetLat, targetLng], 16.5);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      subdomains: ['a', 'b', 'c']
+    }).addTo(map);
+
+    marker = L.marker([targetLat, targetLng], { icon: pinIcon }).addTo(map);
+
     map.on('click', function(e) {
-      marker.setLatLng(e.latlng);
-      if (window.Android) {
-        Android.onLocationSelected(e.latlng.lat, e.latlng.lng);
+      if (!readOnly) {
+        marker.setLatLng(e.latlng);
+        if (window.Android && window.Android.onLocationSelected) {
+          window.Android.onLocationSelected(e.latlng.lat, e.latlng.lng);
+        }
       }
     });
+  } else {
+    map.setView([targetLat, targetLng], 16.5);
+    if (marker) marker.setLatLng([targetLat, targetLng]);
   }
+
+  setTimeout(function() {
+    if (map) map.invalidateSize();
+  }, 150);
+
+  setTimeout(function() {
+    if (map) map.invalidateSize();
+  }, 500);
 }
 
 function setCenter(lat, lng) {
-  map.setView([lat, lng], 17);
-  marker.setLatLng([lat, lng]);
+  if (map && marker) {
+    map.setView([lat, lng], 16.5);
+    marker.setLatLng([lat, lng]);
+  }
 }
+
+window.addEventListener('resize', function() {
+  if (map) map.invalidateSize();
+});
 </script>
 </body>
 </html>

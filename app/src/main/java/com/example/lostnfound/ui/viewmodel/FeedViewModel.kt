@@ -124,7 +124,7 @@ class FeedViewModel(private val repository: ItemRepository) : ViewModel() {
         title = description.take(80),
         category = category,
         imageUrl = imageUrl,
-        location = "Unknown",
+        location = lastSeenLocation.ifBlank { "Campus" },
         reportedAt = reportedAt,
         isLostItem = true,
         status = status

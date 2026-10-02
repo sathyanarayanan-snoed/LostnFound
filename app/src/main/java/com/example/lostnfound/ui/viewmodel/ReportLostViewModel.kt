@@ -23,6 +23,7 @@ data class ReportLostUiState(
     val description: String = "",
     val latitude: Double? = null,
     val longitude: Double? = null,
+    val lastSeenLocation: String = "",
     val category: ItemCategory = ItemCategory.OTHER,
     val lostDate: Long = System.currentTimeMillis(),
     val imageUri: Uri? = null,
@@ -62,6 +63,10 @@ class ReportLostViewModel(
 
     fun updateLocation(lat: Double, lon: Double) {
         _uiState.value = _uiState.value.copy(latitude = lat, longitude = lon)
+    }
+
+    fun updateLastSeenLocation(location: String) {
+        _uiState.value = _uiState.value.copy(lastSeenLocation = location)
     }
 
     fun updateCategory(category: ItemCategory) {
@@ -164,7 +169,8 @@ class ReportLostViewModel(
                 proofOfOwnership = _uiState.value.proofOfOwnership,
                 proofImageUrl = proofImageUrl,
                 latitude = _uiState.value.latitude,
-                longitude = _uiState.value.longitude
+                longitude = _uiState.value.longitude,
+                lastSeenLocation = _uiState.value.lastSeenLocation
             )
 
             val result = itemRepository.addLostItem(item)
@@ -178,5 +184,12 @@ class ReportLostViewModel(
 
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null, isRateLimited = false)
+    }
+
+    fun resetForm() {
+        _uiState.value = ReportLostUiState(
+            ownerName = _uiState.value.ownerName,
+            ownerContact = _uiState.value.ownerContact
+        )
     }
 }

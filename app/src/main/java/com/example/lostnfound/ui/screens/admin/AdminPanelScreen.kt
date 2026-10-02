@@ -48,7 +48,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lostnfound.domain.model.User
 import com.example.lostnfound.ui.components.AvatarImage
+import com.example.lostnfound.ui.components.EmptyStateView
 import com.example.lostnfound.ui.theme.AccentGreen
+import com.example.lostnfound.ui.theme.AppElevation
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 import com.example.lostnfound.ui.viewmodel.AdminViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,11 +70,11 @@ fun AdminPanelScreen(
                     Text(
                         text = "Admin Panel",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.SemiBold
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack, modifier = Modifier.padding(start = 8.dp)) {
+                    IconButton(onClick = onBack, modifier = Modifier.padding(start = AppSpacing.SM)) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
@@ -93,17 +97,17 @@ fun AdminPanelScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 12.dp)
+                    .padding(horizontal = AppSpacing.XL, vertical = AppSpacing.MD)
             ) {
                 Surface(
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(AppRadius.LG),
                     color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier.padding(14.dp),
+                        modifier = Modifier.padding(AppSpacing.MD),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
                     ) {
                         Icon(
                             Icons.Outlined.Shield,
@@ -115,7 +119,7 @@ fun AdminPanelScreen(
                             Text(
                                 text = "Role Management",
                                 style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Text(
@@ -127,25 +131,33 @@ fun AdminPanelScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.MD))
 
                 Text(
                     text = "All Registered Users (${uiState.users.size})",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.SM))
 
                 if (uiState.isLoading && uiState.users.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
+                } else if (uiState.users.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        EmptyStateView(
+                            icon = Icons.Outlined.Shield,
+                            title = "No Users Found",
+                            subtitle = "Registered campus users will appear here."
+                        )
+                    }
                 } else {
                     LazyColumn(
-                        contentPadding = PaddingValues(vertical = 4.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        contentPadding = PaddingValues(vertical = AppSpacing.XS),
+                        verticalArrangement = Arrangement.spacedBy(AppSpacing.SM),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(uiState.users, key = { it.uid }) { user ->
@@ -165,7 +177,7 @@ fun AdminPanelScreen(
                 Snackbar(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(16.dp),
+                        .padding(AppSpacing.LG),
                     action = {
                         TextButton(onClick = { viewModel.clearMessage() }) {
                             Text("OK")
@@ -180,7 +192,7 @@ fun AdminPanelScreen(
                 Snackbar(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(16.dp),
+                        .padding(AppSpacing.LG),
                     action = {
                         TextButton(onClick = { viewModel.clearMessage() }) {
                             Text("Dismiss")
@@ -205,15 +217,14 @@ private fun AdminUserRow(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(AppRadius.LG),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 2.dp,
-        border = BorderStroke(0.75.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
+        shadowElevation = AppElevation.Low
     ) {
         Row(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier.padding(AppSpacing.MD),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.MD)
         ) {
             AvatarImage(
                 imageUrl = user.profilePicUrl,
@@ -225,7 +236,7 @@ private fun AdminUserRow(
                 Text(
                     text = user.displayName.ifBlank { "User" },
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -249,7 +260,7 @@ private fun AdminUserRow(
                 } else {
                     Surface(
                         onClick = { expanded = true },
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(AppRadius.SM),
                         color = when (user.role) {
                             "admin" -> MaterialTheme.colorScheme.primaryContainer
                             "moderator" -> AccentGreen.copy(alpha = 0.15f)
@@ -265,14 +276,14 @@ private fun AdminUserRow(
                         )
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            modifier = Modifier.padding(horizontal = AppSpacing.SM, vertical = AppSpacing.XS),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.spacedBy(AppSpacing.XS)
                         ) {
                             Text(
                                 text = user.role.replaceFirstChar { it.uppercase() },
                                 style = MaterialTheme.typography.labelMedium.copy(fontSize = 12.sp),
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.SemiBold,
                                 color = when (user.role) {
                                     "admin" -> MaterialTheme.colorScheme.primary
                                     "moderator" -> AccentGreen
@@ -297,11 +308,11 @@ private fun AdminUserRow(
                                 text = {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
                                     ) {
                                         Text(
                                             text = role.replaceFirstChar { it.uppercase() },
-                                            fontWeight = if (role == user.role) FontWeight.Bold else FontWeight.Normal
+                                            fontWeight = if (role == user.role) FontWeight.SemiBold else FontWeight.Normal
                                         )
                                         if (role == user.role) {
                                             Icon(

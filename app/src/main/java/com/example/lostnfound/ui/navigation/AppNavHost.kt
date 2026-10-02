@@ -80,8 +80,12 @@ fun AppNavHost() {
                 val reportFoundViewModel: ReportFoundViewModel = viewModel(factory = factory)
                 ReportFoundScreen(
                     viewModel = reportFoundViewModel,
-                    onBack = { backStack.removeLastOrNull() },
+                    onBack = {
+                        reportFoundViewModel.resetForm()
+                        backStack.removeLastOrNull()
+                    },
                     onSuccess = {
+                        reportFoundViewModel.resetForm()
                         backStack.removeLastOrNull()
                         backStack.add(SuccessRoute(isLostItem = false))
                     }
@@ -91,8 +95,12 @@ fun AppNavHost() {
                 val reportLostViewModel: ReportLostViewModel = viewModel(factory = factory)
                 ReportLostScreen(
                     viewModel = reportLostViewModel,
-                    onBack = { backStack.removeLastOrNull() },
+                    onBack = {
+                        reportLostViewModel.resetForm()
+                        backStack.removeLastOrNull()
+                    },
                     onSuccess = {
+                        reportLostViewModel.resetForm()
                         backStack.removeLastOrNull()
                         backStack.add(SuccessRoute(isLostItem = true))
                     }

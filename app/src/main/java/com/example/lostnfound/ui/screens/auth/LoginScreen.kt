@@ -58,6 +58,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.lostnfound.ui.components.AppButton
 import com.example.lostnfound.ui.components.AppTextField
+import com.example.lostnfound.ui.theme.AppElevation
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 import com.example.lostnfound.ui.theme.CardGradientEnd
 import com.example.lostnfound.ui.theme.CardGradientStart
 import com.example.lostnfound.ui.viewmodel.AuthViewModel
@@ -111,11 +114,11 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 32.dp),
+                .padding(horizontal = AppSpacing.XXL, vertical = AppSpacing.XXXL),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.XXXXL))
 
             Surface(
                 modifier = Modifier
@@ -128,7 +131,7 @@ fun LoginScreen(
                     ),
                 shape = CircleShape,
                 color = Color.White.copy(alpha = 0.15f),
-                shadowElevation = 8.dp
+                shadowElevation = AppElevation.High
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
@@ -140,25 +143,25 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.XL))
 
             Text(
                 text = "Lost & Found",
                 style = MaterialTheme.typography.displayMedium,
                 color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.XS))
 
             Surface(
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(AppRadius.XL),
                 color = Color.White.copy(alpha = 0.18f),
-                modifier = Modifier.padding(horizontal = 12.dp)
+                modifier = Modifier.padding(horizontal = AppSpacing.MD)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    modifier = Modifier.padding(horizontal = AppSpacing.MD, vertical = AppSpacing.XS)
                 ) {
                     Icon(
                         Icons.Outlined.Shield,
@@ -175,25 +178,25 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(36.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.XXXL))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.extraLarge,
-                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                shape = RoundedCornerShape(AppRadius.Full),
+                elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.Medium),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    modifier = Modifier.padding(AppSpacing.XXL),
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.LG)
                 ) {
                     Text(
                         text = if (uiState.isSignUpMode) "Create Account" else "Welcome Back",
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.SemiBold
                     )
 
                     AnimatedContent(
@@ -204,7 +207,7 @@ fun LoginScreen(
                         },
                         label = "authMode"
                     ) { isSignUp ->
-                        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.MD)) {
                             if (isSignUp) {
                                 AppTextField(
                                     value = displayName,
@@ -280,7 +283,7 @@ fun LoginScreen(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(AppSpacing.XS))
 
                             AppButton(
                                 text = if (isSignUp) "Create Account" else "Sign In",
@@ -312,14 +315,14 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.XXXL))
         }
 
         uiState.error?.let { error ->
             Snackbar(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(16.dp),
+                    .padding(AppSpacing.LG),
                 action = {
                     TextButton(onClick = { viewModel.clearError() }) {
                         Text("Dismiss")
@@ -334,7 +337,7 @@ fun LoginScreen(
             Snackbar(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(16.dp),
+                    .padding(AppSpacing.LG),
                 action = {
                     TextButton(onClick = { viewModel.clearError() }) {
                         Text("OK")

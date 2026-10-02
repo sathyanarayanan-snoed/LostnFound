@@ -16,8 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +29,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 
 @Composable
 fun ImagePicker(
@@ -45,11 +47,11 @@ fun ImagePicker(
         modifier = modifier
             .fillMaxWidth()
             .height(200.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(AppRadius.LG))
             .border(
-                width = 2.dp,
+                width = 1.dp,
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(AppRadius.LG)
             )
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
             .animateContentSize()
@@ -60,7 +62,7 @@ fun ImagePicker(
             AsyncImage(
                 model = imageUri,
                 contentDescription = label,
-                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)),
+                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(AppRadius.LG)),
                 contentScale = ContentScale.Crop
             )
             IconButton(
@@ -75,14 +77,14 @@ fun ImagePicker(
                         .size(28.dp)
                         .background(
                             MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                            RoundedCornerShape(14.dp)
+                            RoundedCornerShape(AppRadius.MD)
                         )
                 )
             }
         } else {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.SM)
             ) {
                 Icon(
                     Icons.Outlined.AddAPhoto,

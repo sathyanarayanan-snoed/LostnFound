@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,12 +20,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
+import com.example.lostnfound.ui.theme.AppSpacing
 
 @Composable
 fun LoadingOverlay(
     isLoading: Boolean,
-    message: String = "Loading..."
+    message: String = "Loading...",
+    modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
         visible = isLoading,
@@ -32,25 +35,30 @@ fun LoadingOverlay(
         exit = fadeOut()
     ) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f))
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
                 .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { },
+                    onClick = {}
+                ),
             contentAlignment = Alignment.Center
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(48.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 3.dp
+                    modifier = Modifier.size(AppSpacing.XXXXXL),
+                    color = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.LG))
                 Text(
                     text = message,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Medium
+                    ),
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }

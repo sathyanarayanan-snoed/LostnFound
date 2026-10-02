@@ -6,8 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Shield
@@ -54,12 +53,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.lostnfound.domain.model.FoundItem
 import com.example.lostnfound.domain.model.ItemCategory
@@ -67,6 +64,9 @@ import com.example.lostnfound.ui.components.AppTextField
 import com.example.lostnfound.ui.components.CategoryChip
 import com.example.lostnfound.ui.components.ImagePicker
 import com.example.lostnfound.ui.components.LocationPicker
+import com.example.lostnfound.ui.theme.AppElevation
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 import com.example.lostnfound.ui.theme.PrimaryLight
 import com.example.lostnfound.ui.viewmodel.ReportLostViewModel
 
@@ -79,8 +79,10 @@ fun ReportLostScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    if (uiState.isSubmitted) {
-        LaunchedEffect(Unit) { onSuccess() }
+    LaunchedEffect(uiState.isSubmitted) {
+        if (uiState.isSubmitted) {
+            onSuccess()
+        }
     }
 
     Scaffold(
@@ -90,7 +92,7 @@ fun ReportLostScreen(
                     Text(
                         text = "Report Lost Item",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.SemiBold
                     )
                 },
                 navigationIcon = {
@@ -98,7 +100,7 @@ fun ReportLostScreen(
                         onClick = {
                             if (uiState.currentStep > 0) viewModel.previousStep() else onBack()
                         },
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier.padding(start = AppSpacing.SM)
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
@@ -123,22 +125,22 @@ fun ReportLostScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(18.dp)
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.LG)
             ) {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    shape = RoundedCornerShape(16.dp),
+                        .padding(horizontal = AppSpacing.XL),
+                    shape = RoundedCornerShape(AppRadius.LG),
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                     border = androidx.compose.foundation.BorderStroke(
-                        0.75.dp,
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+                        1.dp,
+                        MaterialTheme.colorScheme.outlineVariant
                     )
                 ) {
                     Column(
-                        modifier = Modifier.padding(14.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        modifier = Modifier.padding(AppSpacing.MD),
+                        verticalArrangement = Arrangement.spacedBy(AppSpacing.SM)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -153,13 +155,13 @@ fun ReportLostScreen(
                                     else -> "Step 4: Photo Verification"
                                 },
                                 style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Text(
                                 text = "${uiState.currentStep + 1} of 4",
                                 style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -189,8 +191,8 @@ fun ReportLostScreen(
                     label = "stepTransition"
                 ) { step ->
                     Column(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                        verticalArrangement = Arrangement.spacedBy(20.dp)
+                        modifier = Modifier.padding(horizontal = AppSpacing.XL),
+                        verticalArrangement = Arrangement.spacedBy(AppSpacing.XL)
                     ) {
                         when (step) {
                             0 -> OwnerStep(uiState, viewModel)
@@ -206,8 +208,8 @@ fun ReportLostScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        .padding(horizontal = AppSpacing.XL, vertical = AppSpacing.LG),
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.MD)
                 ) {
                     if (uiState.currentStep > 0) {
                         OutlinedButton(
@@ -215,7 +217,7 @@ fun ReportLostScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(54.dp),
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(AppRadius.LG),
                             border = androidx.compose.foundation.BorderStroke(
                                 1.dp,
                                 MaterialTheme.colorScheme.outline
@@ -235,7 +237,7 @@ fun ReportLostScreen(
                         modifier = Modifier
                             .weight(1f)
                             .height(54.dp),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(AppRadius.LG),
                         enabled = isNextEnabled(uiState),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
@@ -244,14 +246,14 @@ fun ReportLostScreen(
                         if (uiState.isLoading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(22.dp),
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 strokeWidth = 2.dp
                             )
                         } else {
                             Text(
                                 text = if (uiState.currentStep == 3) "Submit Lost Item" else "Next Step",
                                 style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
                     }
@@ -262,7 +264,7 @@ fun ReportLostScreen(
                 Snackbar(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(16.dp),
+                        .padding(AppSpacing.LG),
                     action = {
                         TextButton(onClick = { viewModel.clearError() }) {
                             Text("Dismiss")
@@ -281,11 +283,11 @@ private fun OwnerStep(
     uiState: com.example.lostnfound.ui.viewmodel.ReportLostUiState,
     viewModel: ReportLostViewModel
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.LG)) {
         Text(
             text = "Your Details",
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
@@ -325,11 +327,11 @@ private fun ItemStep(
     uiState: com.example.lostnfound.ui.viewmodel.ReportLostUiState,
     viewModel: ReportLostViewModel
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.LG)) {
         Text(
             text = "Item Details",
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
         )
         AppTextField(
@@ -348,10 +350,10 @@ private fun ItemStep(
         Text(
             text = "Category",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
         )
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)) {
             items(ItemCategory.entries) { category ->
                 CategoryChip(
                     label = category.displayName,
@@ -362,18 +364,33 @@ private fun ItemStep(
         }
 
         Text(
-            text = "Where was it last seen?",
+            text = "Last Seen Location",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
         )
+        AppTextField(
+            value = uiState.lastSeenLocation,
+            onValueChange = { viewModel.updateLastSeenLocation(it) },
+            label = "Describe Location (e.g., Main Block, Cafeteria)",
+            leadingIcon = {
+                Icon(
+                    Icons.Outlined.LocationOn,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        )
+
+        Text(
+            text = "Pin on Campus Map (Optional)",
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Surface(
-            shape = RoundedCornerShape(16.dp),
-            border = androidx.compose.foundation.BorderStroke(
-                0.75.dp,
-                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-            ),
-            modifier = Modifier.clip(RoundedCornerShape(16.dp))
+            shape = RoundedCornerShape(AppRadius.LG),
+            modifier = Modifier.clip(RoundedCornerShape(AppRadius.LG))
         ) {
             LocationPicker(
                 onLocationSelected = { lat, lon -> viewModel.updateLocation(lat, lon) }
@@ -385,9 +402,9 @@ private fun ItemStep(
                 text = "Recently Found Items Matching Your Description",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(AppSpacing.MD)) {
                 items(uiState.potentialMatches) { item ->
                     MatchCard(item)
                 }
@@ -401,26 +418,22 @@ private fun ProofStep(
     uiState: com.example.lostnfound.ui.viewmodel.ReportLostUiState,
     viewModel: ReportLostViewModel
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.LG)) {
         Text(
             text = "Proof of Ownership",
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
         )
         Surface(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(AppRadius.LG),
             color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f),
-            border = androidx.compose.foundation.BorderStroke(
-                0.75.dp,
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-            ),
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
-                modifier = Modifier.padding(14.dp),
+                modifier = Modifier.padding(AppSpacing.MD),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
             ) {
                 Icon(
                     Icons.Outlined.Shield,
@@ -460,11 +473,11 @@ private fun PhotoStep(
     uiState: com.example.lostnfound.ui.viewmodel.ReportLostUiState,
     viewModel: ReportLostViewModel
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.LG)) {
         Text(
             text = "Reference Photograph",
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
@@ -484,13 +497,9 @@ private fun PhotoStep(
 private fun MatchCard(item: FoundItem) {
     Surface(
         modifier = Modifier.width(170.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(AppRadius.LG),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 2.dp,
-        border = androidx.compose.foundation.BorderStroke(
-            0.75.dp,
-            MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
-        )
+        shadowElevation = AppElevation.Low
     ) {
         Column {
             AsyncImage(
@@ -499,19 +508,19 @@ private fun MatchCard(item: FoundItem) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(105.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                    .clip(RoundedCornerShape(topStart = AppRadius.LG, topEnd = AppRadius.LG)),
                 contentScale = ContentScale.Crop
             )
-            Column(modifier = Modifier.padding(10.dp)) {
+            Column(modifier = Modifier.padding(AppSpacing.SM)) {
                 Text(
                     text = item.description,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.XXS))
                 Text(
                     text = "Found at: ${item.placeFound}",
                     style = MaterialTheme.typography.labelSmall,
@@ -527,7 +536,7 @@ private fun MatchCard(item: FoundItem) {
 private fun isNextEnabled(uiState: com.example.lostnfound.ui.viewmodel.ReportLostUiState): Boolean {
     return when (uiState.currentStep) {
         0 -> uiState.ownerName.isNotBlank() && uiState.ownerContact.isNotBlank()
-        1 -> uiState.description.isNotBlank() && uiState.latitude != null
+        1 -> uiState.description.isNotBlank() && uiState.lastSeenLocation.isNotBlank()
         2 -> uiState.proofOfOwnership.isNotBlank()
         else -> uiState.imageUri != null
     }

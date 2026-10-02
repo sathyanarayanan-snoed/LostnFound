@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +41,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +58,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lostnfound.domain.model.ItemType
+import com.example.lostnfound.ui.components.EmptyStateView
+import com.example.lostnfound.ui.theme.AppElevation
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 import com.example.lostnfound.ui.viewmodel.FeedViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,6 +79,10 @@ fun FeedScreen(
     var showFabMenu by remember { mutableStateOf(false) }
     val tabs = listOf("All Items" to ItemType.ALL, "Lost" to ItemType.LOST, "Found" to ItemType.FOUND)
 
+    LaunchedEffect(Unit) {
+        viewModel.loadItems()
+    }
+
     Scaffold(
         floatingActionButton = {
             Column(horizontalAlignment = Alignment.End) {
@@ -83,12 +92,12 @@ fun FeedScreen(
                     exit = fadeOut()
                 ) {
                     Column(
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.padding(bottom = AppSpacing.LG),
+                        verticalArrangement = Arrangement.spacedBy(AppSpacing.MD),
                         horizontalAlignment = Alignment.End
                     ) {
                         ExtendedFloatingActionButton(
-                            text = { Text("Found Something", fontWeight = FontWeight.Bold) },
+                            text = { Text("Found Something", fontWeight = FontWeight.SemiBold) },
                             icon = { Icon(Icons.Default.Add, contentDescription = null) },
                             onClick = {
                                 showFabMenu = false
@@ -96,11 +105,11 @@ fun FeedScreen(
                             },
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            shape = RoundedCornerShape(20.dp),
-                            elevation = FloatingActionButtonDefaults.elevation(6.dp)
+                            shape = RoundedCornerShape(AppRadius.XL),
+                            elevation = FloatingActionButtonDefaults.elevation(AppElevation.Medium)
                         )
                         ExtendedFloatingActionButton(
-                            text = { Text("Lost Something", fontWeight = FontWeight.Bold) },
+                            text = { Text("Lost Something", fontWeight = FontWeight.SemiBold) },
                             icon = { Icon(Icons.Default.Add, contentDescription = null) },
                             onClick = {
                                 showFabMenu = false
@@ -108,22 +117,22 @@ fun FeedScreen(
                             },
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            shape = RoundedCornerShape(20.dp),
-                            elevation = FloatingActionButtonDefaults.elevation(6.dp)
+                            shape = RoundedCornerShape(AppRadius.XL),
+                            elevation = FloatingActionButtonDefaults.elevation(AppElevation.Medium)
                         )
                     }
                 }
                 FloatingActionButton(
                     onClick = { showFabMenu = !showFabMenu },
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                     shape = CircleShape,
-                    modifier = Modifier.shadow(12.dp, CircleShape)
+                    elevation = FloatingActionButtonDefaults.elevation(AppElevation.High)
                 ) {
                     Icon(
                         Icons.Default.Add,
                         contentDescription = "Report Action",
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
@@ -137,7 +146,7 @@ fun FeedScreen(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f),
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f),
                             MaterialTheme.colorScheme.background
                         )
                     )
@@ -148,7 +157,7 @@ fun FeedScreen(
                 color = Color.Transparent
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+                    modifier = Modifier.padding(horizontal = AppSpacing.XL, vertical = AppSpacing.LG)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -159,7 +168,7 @@ fun FeedScreen(
                             Text(
                                 text = "Lost & Found Board",
                                 style = MaterialTheme.typography.headlineLarge.copy(
-                                    fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.SemiBold,
                                     letterSpacing = (-0.5).sp
                                 ),
                                 color = MaterialTheme.colorScheme.onSurface
@@ -173,19 +182,14 @@ fun FeedScreen(
                         }
 
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             IconButton(
                                 onClick = onSearchUsersClick,
                                 modifier = Modifier
                                     .size(44.dp)
-                                    .shadow(6.dp, CircleShape)
-                                    .border(
-                                        1.dp,
-                                        MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
-                                        CircleShape
-                                    )
+                                    .shadow(AppElevation.Low, CircleShape)
                                     .background(MaterialTheme.colorScheme.surface, CircleShape)
                             ) {
                                 Icon(
@@ -199,12 +203,7 @@ fun FeedScreen(
                                 onClick = onProfileClick,
                                 modifier = Modifier
                                     .size(44.dp)
-                                    .shadow(6.dp, CircleShape)
-                                    .border(
-                                        1.dp,
-                                        MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
-                                        CircleShape
-                                    )
+                                    .shadow(AppElevation.Low, CircleShape)
                                     .background(MaterialTheme.colorScheme.surface, CircleShape)
                             ) {
                                 Icon(
@@ -216,22 +215,17 @@ fun FeedScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(AppSpacing.LG))
 
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .shadow(8.dp, RoundedCornerShape(24.dp))
-                            .border(
-                                0.75.dp,
-                                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                RoundedCornerShape(24.dp)
-                            ),
-                        shape = RoundedCornerShape(24.dp),
+                            .shadow(AppElevation.Medium, RoundedCornerShape(AppRadius.Full)),
+                        shape = RoundedCornerShape(AppRadius.Full),
                         color = MaterialTheme.colorScheme.surface
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            modifier = Modifier.padding(horizontal = AppSpacing.SM, vertical = AppSpacing.XXS),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             TextField(
@@ -255,7 +249,7 @@ fun FeedScreen(
                                     if (uiState.searchFilters.query.isNotEmpty()) {
                                         IconButton(
                                             onClick = { viewModel.updateSearchQuery("") },
-                                            modifier = Modifier.size(24.dp)
+                                            modifier = Modifier.size(44.dp)
                                         ) {
                                             Icon(
                                                 Icons.Outlined.Close,
@@ -277,11 +271,11 @@ fun FeedScreen(
                             IconButton(
                                 onClick = { showFilterSheet = true },
                                 modifier = Modifier
-                                    .padding(end = 4.dp)
-                                    .size(42.dp)
+                                    .padding(end = AppSpacing.XS)
+                                    .size(44.dp)
                                     .background(
                                         MaterialTheme.colorScheme.primaryContainer,
-                                        RoundedCornerShape(16.dp)
+                                        RoundedCornerShape(AppRadius.LG)
                                     )
                             ) {
                                 Icon(
@@ -299,56 +293,59 @@ fun FeedScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    .padding(horizontal = AppSpacing.XL, vertical = AppSpacing.SM),
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.SM)
             ) {
                 tabs.forEach { (title, type) ->
                     val isSelected = uiState.selectedTab == type
                     Surface(
                         onClick = { viewModel.selectTab(type) },
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(AppRadius.LG),
                         color = if (isSelected) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.surface,
-                        shadowElevation = if (isSelected) 6.dp else 2.dp,
+                        shadowElevation = if (isSelected) AppElevation.Low else AppElevation.Flat,
                         border = if (!isSelected) androidx.compose.foundation.BorderStroke(
-                            0.75.dp,
-                            MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                            1.dp,
+                            MaterialTheme.colorScheme.outlineVariant
                         ) else null,
                         modifier = Modifier.weight(1f)
                     ) {
                         Box(
-                            modifier = Modifier.padding(vertical = 10.dp),
+                            modifier = Modifier.padding(vertical = AppSpacing.MD),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = title,
                                 style = MaterialTheme.typography.labelMedium,
-                                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
                             )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.SM))
 
             if (uiState.searchFilters.query.isNotBlank() && !uiState.isLoading) {
                 Text(
                     text = "${uiState.items.size} results found",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(horizontal = AppSpacing.XL, vertical = AppSpacing.XS)
                 )
             }
 
-            Box(
+            PullToRefreshBox(
+                isRefreshing = uiState.isLoading && uiState.items.isNotEmpty(),
+                onRefresh = { viewModel.loadItems() },
                 modifier = Modifier.fillMaxSize()
             ) {
                 if (uiState.isLoading && uiState.items.isEmpty()) {
                     LazyColumn(
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
+                        contentPadding = PaddingValues(horizontal = AppSpacing.MD, vertical = AppSpacing.SM),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(4) {
@@ -356,44 +353,15 @@ fun FeedScreen(
                         }
                     }
                 } else if (uiState.items.isEmpty()) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(horizontal = 32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Surface(
-                            modifier = Modifier.size(80.dp),
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    Icons.Outlined.SearchOff,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(40.dp),
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "No Items Found",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "Try adjusting your search query, location filter, or switching between tabs.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-                    }
+                    EmptyStateView(
+                        icon = Icons.Outlined.SearchOff,
+                        title = "No Items Found",
+                        subtitle = "Try adjusting your search query, location filter, or switching between tabs.",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 } else {
                     LazyColumn(
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
+                        contentPadding = PaddingValues(horizontal = AppSpacing.MD, vertical = AppSpacing.SM),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(
@@ -411,7 +379,7 @@ fun FeedScreen(
                 if (uiState.isLoading && uiState.items.isNotEmpty()) {
                     Box(modifier = Modifier.align(Alignment.BottomCenter)) {
                         CircularProgressIndicator(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(AppSpacing.LG),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }

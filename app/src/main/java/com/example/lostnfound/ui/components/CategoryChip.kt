@@ -1,6 +1,7 @@
 package com.example.lostnfound.ui.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
@@ -10,9 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import com.example.lostnfound.ui.theme.AppDuration
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 
 @Composable
 fun CategoryChip(
@@ -24,12 +26,14 @@ fun CategoryChip(
     val containerColor by animateColorAsState(
         targetValue = if (selected) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.surface,
+        animationSpec = tween(AppDuration.Quick),
         label = "chipColor"
     )
 
     val contentColor by animateColorAsState(
-        targetValue = if (selected) Color.White
+        targetValue = if (selected) MaterialTheme.colorScheme.onPrimary
         else MaterialTheme.colorScheme.onSurfaceVariant,
+        animationSpec = tween(AppDuration.Quick),
         label = "chipTextColor"
     )
 
@@ -41,10 +45,10 @@ fun CategoryChip(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
                 color = contentColor,
-                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
             )
         },
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(AppRadius.XL),
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = containerColor,
             containerColor = containerColor,
@@ -57,6 +61,6 @@ fun CategoryChip(
             borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
             selectedBorderColor = MaterialTheme.colorScheme.primary
         ),
-        modifier = modifier.padding(end = 6.dp)
+        modifier = modifier.padding(end = AppSpacing.SM)
     )
 }

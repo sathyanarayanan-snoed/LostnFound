@@ -15,6 +15,7 @@ data class LostItem(
     val proofImageUrl: String = "",
     val latitude: Double? = null,
     val longitude: Double? = null,
+    val lastSeenLocation: String = "",
     val lostDate: Long = System.currentTimeMillis(),
     val reportedAt: Long = System.currentTimeMillis(),
     val expiresAt: Long = System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000L,

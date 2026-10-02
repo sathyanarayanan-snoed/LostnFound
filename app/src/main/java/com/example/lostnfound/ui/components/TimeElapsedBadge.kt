@@ -1,6 +1,5 @@
 package com.example.lostnfound.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -16,11 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.lostnfound.ui.theme.AccentGreen
 import com.example.lostnfound.ui.theme.AccentGreenContainer
+import com.example.lostnfound.ui.theme.AppElevation
+import com.example.lostnfound.ui.theme.AppRadius
+import com.example.lostnfound.ui.theme.AppSpacing
 import com.example.lostnfound.ui.theme.WarningAmber
 import com.example.lostnfound.ui.theme.WarningAmberContainer
 
@@ -48,13 +49,13 @@ fun TimeElapsedBadge(
 
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(AppRadius.MD),
         color = bgColor.copy(alpha = 0.95f),
-        shadowElevation = 2.dp
+        shadowElevation = AppElevation.Low
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = AppSpacing.SM, vertical = AppSpacing.XS)
         ) {
             Icon(
                 imageVector = Icons.Outlined.Schedule,
@@ -62,12 +63,12 @@ fun TimeElapsedBadge(
                 tint = textColor,
                 modifier = Modifier.size(12.dp)
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(AppSpacing.XS))
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelSmall,
                 color = textColor,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Medium
             )
         }
     }
